@@ -28,19 +28,16 @@ PHPCS (standard `Magento2` de magento/magento-coding-standard) : 0 erreur.
 
 ## Installation
 
-Depuis un dépôt git privé ou une archive (le module n'est pas publié sur Packagist ni sur la Marketplace) :
+Le module n'est pas sur Packagist : déclarer ce dépôt GitHub dans le `composer.json` de la boutique.
 
 ```bash
-composer config repositories.cm-cube vcs git@github.com:ClickAndMortar/magento2-module-cube.git
+composer config repositories.cm-cube vcs https://github.com/ClickAndMortar/magento2-module-cube
 composer require clickandmortar/module-cube:^1.0
 bin/magento module:enable ClickAndMortar_Cube
 bin/magento setup:upgrade
 # en mode production :
 bin/magento setup:di:compile && bin/magento setup:static-content:deploy -f
 ```
-
-À partir d'une archive zip : `composer config repositories.cm-artifacts artifact /chemin/vers/dossier-des-zips`, puis
-la même commande `composer require`.
 
 ## Jeton d'accès pour le cube
 
@@ -239,4 +236,4 @@ docker/run.sh 2.4.8 down      # supprime la pile et ses volumes
 
 ## Licence
 
-OSL-3.0.
+[OSL-3.0](LICENSE.txt), comme Magento Open Source.
