@@ -16,7 +16,7 @@ ni adresse, seulement la ville et le nombre d'articles.
 
 | Magento Open Source | PHP | Base | OpenSearch | Résultat |
 |---|---|---|---|---|
-| 2.4.6-p15 | 8.2.30 | MariaDB 10.6 | 2.19.3 | ✅ 24 tests unitaires (PHPUnit 9.6) + test d'API de bout en bout (102 assertions) |
+| 2.4.6-p15 | 8.2.35 | MariaDB 10.6 | 2.19.3 | ✅ 24 tests unitaires (PHPUnit 9.6) + test d'API de bout en bout (102 assertions) |
 | 2.4.8-p5 | 8.3.36 | MariaDB 11.4 | 2.19.3 | ✅ idem (PHPUnit 10.5) |
 | 2.4.9 | 8.4.27 | MariaDB 11.4 | 2.19.3 | ✅ idem (PHPUnit 12.5) |
 
