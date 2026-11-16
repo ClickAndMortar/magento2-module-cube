@@ -1,5 +1,9 @@
 # ClickAndMortar_Cube: live sales stats for the Cube Magento
 
+<p align="center">
+  <img src="docs/cube-front.jpg" alt="The Cube Magento, front view: a 72 mm orange 3D-printed cube whose screen shows a new order of 189.00 EUR from Lyon" width="520">
+</p>
+
 Magento 2 module by [Click&Mortar](https://www.clickandmortar.fr) that exposes today's sales aggregates through a
 read-only REST API. It feeds the **Cube Magento**, a 3D-printed desk cube with a small screen that shows today's
 revenue, order count and average order value, and plays an animation and a beep on every new order.
