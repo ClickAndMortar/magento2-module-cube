@@ -13,7 +13,7 @@ interface EventsResultInterface
     public const SKIPPED = 'skipped';
 
     /**
-     * Nouvelles commandes, par entity_id croissant.
+     * New orders, by ascending entity_id.
      *
      * @return \ClickAndMortar\Cube\Api\Data\OrderEventInterface[]
      */
@@ -26,7 +26,7 @@ interface EventsResultInterface
     public function setEvents(array $events);
 
     /**
-     * Curseur à renvoyer au prochain appel (since=…).
+     * Cursor to send back on the next call (since=...).
      *
      * @return int
      */
@@ -39,7 +39,7 @@ interface EventsResultInterface
     public function setLastEntityId($lastEntityId);
 
     /**
-     * Commandes plus anciennes non renvoyées à cause de la limite.
+     * Older orders not returned because of the limit.
      *
      * @return int
      */

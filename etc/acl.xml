@@ -5,7 +5,7 @@
         <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="ClickAndMortar_Cube::cube" title="Click&amp;Mortar Cube" sortOrder="200">
-                    <resource id="ClickAndMortar_Cube::stats" title="Lire les statistiques du cube (API)" sortOrder="10"/>
+                    <resource id="ClickAndMortar_Cube::stats" title="Read cube statistics (API)" sortOrder="10"/>
                 </resource>
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">

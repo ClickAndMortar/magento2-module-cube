@@ -27,7 +27,7 @@ interface StatsResultInterface
     public const LAST_ENTITY_ID = 'last_entity_id';
 
     /**
-     * Horodatage ISO 8601 du calcul, dans le fuseau configuré.
+     * ISO 8601 timestamp of the computation, in the configured timezone.
      *
      * @return string
      */
@@ -51,7 +51,7 @@ interface StatsResultInterface
     public function setTimezone($timezone);
 
     /**
-     * Code ISO de la devise de base (ex. EUR).
+     * ISO code of the base currency (e.g. EUR).
      *
      * @return string
      */
@@ -64,7 +64,7 @@ interface StatsResultInterface
     public function setCurrency($currency);
 
     /**
-     * Vues de boutique comptées (vide = toutes).
+     * Store views taken into account (empty = all).
      *
      * @return int[]
      */
@@ -77,7 +77,7 @@ interface StatsResultInterface
     public function setStoreIds(array $storeIds);
 
     /**
-     * Écrans actifs, dans l'ordre : today, compare, week, last_order, goal.
+     * Enabled screens, in order: today, compare, week, last_order, goal.
      *
      * @return string[]
      */
@@ -101,7 +101,7 @@ interface StatsResultInterface
     public function setToday(PeriodTotalsInterface $today);
 
     /**
-     * Hier, de minuit jusqu'à la même heure locale qu'en ce moment.
+     * Yesterday, from midnight up to the same local time as now.
      *
      * @return \ClickAndMortar\Cube\Api\Data\PeriodTotalsInterface
      */
@@ -114,7 +114,7 @@ interface StatsResultInterface
     public function setYesterdaySameTime(PeriodTotalsInterface $totals);
 
     /**
-     * Écart de CA en % avec hier à la même heure (null si hier = 0).
+     * Revenue change in % vs yesterday at the same time (null when yesterday = 0).
      *
      * @return float|null
      */
@@ -127,7 +127,7 @@ interface StatsResultInterface
     public function setRevenueDeltaPct($pct);
 
     /**
-     * Écart du nombre de commandes en % avec hier à la même heure (null si hier = 0).
+     * Order count change in % vs yesterday at the same time (null when yesterday = 0).
      *
      * @return float|null
      */
@@ -140,7 +140,7 @@ interface StatsResultInterface
     public function setOrdersDeltaPct($pct);
 
     /**
-     * Objectif de CA du jour (null si aucun).
+     * Daily revenue goal (null when none).
      *
      * @return float|null
      */
@@ -153,7 +153,7 @@ interface StatsResultInterface
     public function setGoalRevenue($goal);
 
     /**
-     * Avancement de l'objectif en % (peut dépasser 100 ; null sans objectif).
+     * Goal progress in % (may exceed 100; null without a goal).
      *
      * @return float|null
      */
@@ -166,7 +166,7 @@ interface StatsResultInterface
     public function setGoalProgressPct($pct);
 
     /**
-     * Meilleur CA journalier de la fenêtre, aujourd'hui exclu (null si aucune vente).
+     * Best daily revenue within the window, today excluded (null when no sales).
      *
      * @return float|null
      */
@@ -179,7 +179,7 @@ interface StatsResultInterface
     public function setRecordRevenue($revenue);
 
     /**
-     * Date locale du record (AAAA-MM-JJ), ou null.
+     * Local date of the record (YYYY-MM-DD), or null.
      *
      * @return string|null
      */
@@ -192,7 +192,7 @@ interface StatsResultInterface
     public function setRecordDate($date);
 
     /**
-     * Le CA du jour dépasse déjà le record.
+     * Today's revenue already exceeds the record.
      *
      * @return bool
      */
@@ -205,7 +205,7 @@ interface StatsResultInterface
     public function setRecordBrokenToday($broken);
 
     /**
-     * Les 7 derniers jours, du plus ancien à aujourd'hui inclus (aujourd'hui = journée en cours).
+     * The last 7 days, oldest first, today included (today = day so far).
      *
      * @return \ClickAndMortar\Cube\Api\Data\DayTotalsInterface[]
      */
@@ -218,7 +218,7 @@ interface StatsResultInterface
     public function setWeek(array $days);
 
     /**
-     * Dernière commande comptée (tous jours confondus), ou null.
+     * Last counted order (any day), or null.
      *
      * @return \ClickAndMortar\Cube\Api\Data\OrderSummaryInterface|null
      */
@@ -231,7 +231,7 @@ interface StatsResultInterface
     public function setLastOrder(?OrderSummaryInterface $order = null);
 
     /**
-     * Plus grand entity_id compté : curseur initial pour /V1/cm-cube/events.
+     * Highest counted entity_id: initial cursor for /V1/cm-cube/events.
      *
      * @return int
      */

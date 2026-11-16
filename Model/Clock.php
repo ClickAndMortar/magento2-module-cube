@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Model;
 
 /**
- * Horloge injectable (remplacée dans les tests).
+ * Injectable clock (replaced in tests).
  */
 class Clock
 {

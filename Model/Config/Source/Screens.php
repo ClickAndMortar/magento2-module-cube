@@ -10,11 +10,11 @@ class Screens implements OptionSourceInterface
     public function toOptionArray(): array
     {
         return [
-            ['value' => 'today', 'label' => __("CA et commandes du jour")],
-            ['value' => 'compare', 'label' => __("Comparaison avec hier à la même heure")],
-            ['value' => 'week', 'label' => __("Courbe des 7 derniers jours")],
-            ['value' => 'last_order', 'label' => __("Dernière commande")],
-            ['value' => 'goal', 'label' => __("Objectif du jour")],
+            ['value' => 'today', 'label' => __('Today\'s revenue and orders')],
+            ['value' => 'compare', 'label' => __('Comparison with yesterday at the same time')],
+            ['value' => 'week', 'label' => __('Last 7 days chart')],
+            ['value' => 'last_order', 'label' => __('Last order')],
+            ['value' => 'goal', 'label' => __('Daily goal')],
         ];
     }
 }

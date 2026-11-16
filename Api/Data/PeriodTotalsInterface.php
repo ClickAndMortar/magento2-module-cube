@@ -13,7 +13,7 @@ interface PeriodTotalsInterface
     public const AVERAGE_ORDER = 'average_order';
 
     /**
-     * CA (somme des base_grand_total), en devise de base.
+     * Revenue (sum of base_grand_total), in base currency.
      *
      * @return float
      */
@@ -37,7 +37,7 @@ interface PeriodTotalsInterface
     public function setOrders($orders);
 
     /**
-     * Panier moyen (0 sans commande).
+     * Average order value (0 when there is no order).
      *
      * @return float
      */

@@ -9,7 +9,7 @@ use ClickAndMortar\Cube\Api\Data\OrderSummaryInterface;
 use ClickAndMortar\Cube\Api\Data\OrderSummaryInterfaceFactory;
 
 /**
- * Ligne SQL → objet d'API (montant arrondi, quantité entière, date dans le fuseau configuré).
+ * SQL row -> API object (rounded amount, integer quantity, date in the configured timezone).
  */
 class OrderSummaryMapper
 {

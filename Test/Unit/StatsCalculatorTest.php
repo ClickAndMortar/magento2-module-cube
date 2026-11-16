@@ -18,8 +18,8 @@ class StatsCalculatorTest extends TestCase
     public function testAggregateDaysUsesLocalMidnight(): void
     {
         $days = $this->calculator->aggregateDays([
-            ['bucket' => '2026-11-15 22:45', 'revenue' => '10.00', 'orders' => '1'], // 23:45 à Paris le 15
-            ['bucket' => '2026-11-15 23:00', 'revenue' => '20.50', 'orders' => '2'], // 00:00 à Paris le 16
+            ['bucket' => '2026-11-15 22:45', 'revenue' => '10.00', 'orders' => '1'], // 23:45 in Paris on the 15th
+            ['bucket' => '2026-11-15 23:00', 'revenue' => '20.50', 'orders' => '2'], // 00:00 in Paris on the 16th
             ['bucket' => '2026-11-16 12:15', 'revenue' => '5.25', 'orders' => '1'],
         ], new \DateTimeZone('Europe/Paris'));
 
@@ -31,7 +31,7 @@ class StatsCalculatorTest extends TestCase
 
     public function testAggregateDaysAcrossDstChange(): void
     {
-        // Le 25/10/2026, Paris passe de UTC+2 à UTC+1 : la journée locale va de 22:00 UTC (24/10) à 23:00 UTC (25/10).
+        // On 2026-10-25 Paris goes from UTC+2 to UTC+1: the local day runs from 22:00 UTC (10/24) to 23:00 UTC (10/25).
         $days = $this->calculator->aggregateDays([
             ['bucket' => '2026-10-24 21:45', 'revenue' => '1', 'orders' => '1'],
             ['bucket' => '2026-10-24 22:00', 'revenue' => '2', 'orders' => '1'],
@@ -72,11 +72,11 @@ class StatsCalculatorTest extends TestCase
     public function testEventFlags(): void
     {
         $orders = [
-            ['entity_id' => 40, 'amount' => 80.0, 'is_today' => false], // hier
-            ['entity_id' => 41, 'amount' => 50.0, 'is_today' => true],  // première du jour
+            ['entity_id' => 40, 'amount' => 80.0, 'is_today' => false], // yesterday
+            ['entity_id' => 41, 'amount' => 50.0, 'is_today' => true],  // first of the day
             ['entity_id' => 42, 'amount' => 60.0, 'is_today' => true],
             ['entity_id' => 43, 'amount' => 70.0, 'is_today' => true],  // 180 > record 150
-            ['entity_id' => 44, 'amount' => 10.0, 'is_today' => true],  // record déjà battu
+            ['entity_id' => 44, 'amount' => 10.0, 'is_today' => true],  // record already broken
         ];
         $flags = $this->calculator->eventFlags($orders, 41, 0.0, 150.0);
 
@@ -92,10 +92,10 @@ class StatsCalculatorTest extends TestCase
         $orders = [['entity_id' => 9, 'amount' => 30.0, 'is_today' => true]];
         self::assertTrue($this->calculator->eventFlags($orders, 9, 0.0, null)[9]['first_of_day']);
         self::assertFalse($this->calculator->eventFlags($orders, 9, 0.0, null)[9]['record_broken']);
-        // 100 déjà faits avant la commande 9, record 120 : 100 + 30 = 130 > 120
+        // 100 already made before order 9, record 120: 100 + 30 = 130 > 120
         self::assertTrue($this->calculator->eventFlags($orders, 5, 100.0, 120.0)[9]['record_broken']);
         self::assertFalse($this->calculator->eventFlags($orders, 5, 100.0, 120.0)[9]['first_of_day']);
-        // Égalité exacte avec le record : pas battu
+        // Exactly equal to the record: not broken
         self::assertFalse($this->calculator->eventFlags($orders, 5, 90.0, 120.0)[9]['record_broken']);
     }
 }

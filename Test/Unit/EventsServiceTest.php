@@ -58,8 +58,8 @@ class EventsServiceTest extends ServiceTestCase
         $this->orderStats->expects(self::once())->method('ordersSince')
             ->with(99, 3, [1], ['canceled'])
             ->willReturn([
-                $this->row(101, 40.0, '2026-11-15 22:30:00'), // hier 23:30 à Paris
-                $this->row(102, 50.0, '2026-11-15 23:10:00'), // aujourd'hui 00:10
+                $this->row(101, 40.0, '2026-11-15 22:30:00'), // yesterday 23:30 in Paris
+                $this->row(102, 50.0, '2026-11-15 23:10:00'), // today 00:10
                 $this->row(103, 70.0, '2026-11-16 12:00:00'),
             ]);
         $this->orderStats->method('countSince')->willReturn(4);

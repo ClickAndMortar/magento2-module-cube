@@ -7,8 +7,8 @@ use ClickAndMortar\Cube\Model\ResourceModel\OrderStats;
 use Magento\Framework\App\CacheInterface;
 
 /**
- * Historique journalier des jours passés (aujourd'hui exclu), calculé une fois par jour local et mis en cache.
- * Sert à la série des 7 jours et au record.
+ * Daily history of past days (today excluded), computed once per local day and cached.
+ * Feeds the 7-day series and the record.
  */
 class History
 {
@@ -27,7 +27,7 @@ class History
     }
 
     /**
-     * @return array<string, array{revenue: float, orders: int}> clé = date locale, jours sans vente absents
+     * @return array<string, array{revenue: float, orders: int}> key = local date, days without sales omitted
      */
     public function days(Periods $periods): array
     {

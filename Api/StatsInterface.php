@@ -4,18 +4,18 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Api;
 
 /**
- * Agrégats de ventes du jour pour le cube.
+ * Today's sales aggregates for the cube.
  *
  * @api
  */
 interface StatsInterface
 {
     /**
-     * Statistiques du jour (fuseau configuré), comparaison avec hier à la même heure, 7 derniers jours,
-     * record et dernière commande. Aucune donnée personnelle.
+     * Today's figures (configured timezone), comparison with yesterday at the same time, last 7 days,
+     * record and last order. No personal data.
      *
      * @return \ClickAndMortar\Cube\Api\Data\StatsResultInterface
-     * @throws \Magento\Framework\Webapi\Exception 403 si l'API du cube est désactivée
+     * @throws \Magento\Framework\Webapi\Exception 403 when the cube API is disabled
      */
     public function getStats();
 }

@@ -4,20 +4,20 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Api;
 
 /**
- * Nouvelles commandes depuis un identifiant, pour les animations du cube.
+ * New orders since a given entity ID, used to trigger the cube's animations.
  *
  * @api
  */
 interface EventsInterface
 {
     /**
-     * Commandes dont l'entity_id est strictement supérieur à $since, par ordre croissant.
-     * Avec since=0, aucune commande n'est renvoyée : seul le curseur last_entity_id est rempli.
+     * Orders whose entity_id is strictly greater than $since, in ascending order.
+     * With since=0 no order is returned: only the last_entity_id cursor is filled.
      *
-     * @param int $since dernier entity_id déjà vu par le cube
-     * @param int $limit nombre maximal de commandes (0 = valeur configurée, plafonné à 100)
+     * @param int $since last entity_id already seen by the cube
+     * @param int $limit maximum number of orders (0 = configured value, capped at 100)
      * @return \ClickAndMortar\Cube\Api\Data\EventsResultInterface
-     * @throws \Magento\Framework\Webapi\Exception 403 si l'API du cube est désactivée
+     * @throws \Magento\Framework\Webapi\Exception 403 when the cube API is disabled
      */
     public function getEvents($since = 0, $limit = 0);
 }

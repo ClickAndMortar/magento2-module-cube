@@ -1,5 +1,5 @@
-# Banc de test local du module : Magento Open Source (miroir Mage-OS, sans clé repo.magento.com),
-# MariaDB, OpenSearch, PHP-FPM et nginx. Une pile par version (projet compose « cube-<version> »).
+# Local test bench for the module: Magento Open Source (Mage-OS mirror, no repo.magento.com keys needed),
+# MariaDB, OpenSearch, PHP-FPM and nginx. One stack per version (compose project "cube-<version>").
 name: ${COMPOSE_PROJECT_NAME:-cube-test}
 services:
   db:

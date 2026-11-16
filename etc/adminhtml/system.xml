@@ -11,52 +11,52 @@
             <tab>clickandmortar</tab>
             <resource>ClickAndMortar_Cube::config</resource>
             <group id="general" translate="label comment" sortOrder="10" showInDefault="1">
-                <label>Statistiques du cube</label>
-                <comment><![CDATA[Le cube interroge <code>GET /rest/V1/cm-cube/stats</code> et <code>/rest/V1/cm-cube/events</code> avec un jeton d'intégration qui porte la ressource « Click&amp;Mortar Cube &gt; Lire les statistiques du cube ».]]></comment>
+                <label>Cube statistics</label>
+                <comment><![CDATA[The cube polls <code>GET /rest/V1/cm-cube/stats</code> and <code>/rest/V1/cm-cube/events</code> with an integration token granted the "Click&amp;Mortar Cube &gt; Read cube statistics (API)" resource. No personal data is ever exposed.]]></comment>
                 <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1">
-                    <label>Activer l'API du cube</label>
+                    <label>Enable cube API</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Désactivée, l'API répond 403 et le cube affiche « API désactivée ».</comment>
+                    <comment>When disabled, the API answers 403 and the cube shows "API disabled".</comment>
                 </field>
                 <field id="screens" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" canRestore="1">
-                    <label>Écrans actifs</label>
+                    <label>Enabled screens</label>
                     <source_model>ClickAndMortar\Cube\Model\Config\Source\Screens</source_model>
-                    <comment>Écrans entre lesquels le cube fait défiler (molette ou rotation automatique).</comment>
+                    <comment>Screens the cube cycles through (knob or auto-rotation).</comment>
                 </field>
                 <field id="daily_goal" translate="label comment" type="text" sortOrder="30" showInDefault="1" canRestore="1">
-                    <label>Objectif de CA du jour</label>
+                    <label>Daily revenue goal</label>
                     <validate>validate-zero-or-greater validate-number</validate>
-                    <comment>En devise de base. 0 = pas d'objectif (l'écran « objectif » est alors masqué).</comment>
+                    <comment>In base currency. 0 = no goal (the goal screen is then hidden).</comment>
                 </field>
                 <field id="timezone" translate="label comment" type="select" sortOrder="40" showInDefault="1" canRestore="1">
-                    <label>Fuseau horaire</label>
+                    <label>Timezone</label>
                     <source_model>Magento\Config\Model\Config\Source\Locale\Timezone</source_model>
-                    <comment>Fuseau qui définit « aujourd'hui » et « hier à la même heure ».</comment>
+                    <comment>Defines "today" and "yesterday at the same time".</comment>
                 </field>
                 <field id="store_ids" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1">
-                    <label>Boutiques comptées</label>
+                    <label>Store views counted</label>
                     <source_model>ClickAndMortar\Cube\Model\Config\Source\Stores</source_model>
                     <can_be_empty>1</can_be_empty>
-                    <comment>Aucune sélection = toutes les vues de boutique.</comment>
+                    <comment>No selection = all store views.</comment>
                 </field>
                 <field id="excluded_states" translate="label comment" type="multiselect" sortOrder="60" showInDefault="1" canRestore="1">
-                    <label>États de commande exclus</label>
+                    <label>Excluded order states</label>
                     <source_model>ClickAndMortar\Cube\Model\Config\Source\OrderStates</source_model>
                     <can_be_empty>1</can_be_empty>
-                    <comment>Par défaut : annulées. Ajouter « Paiement en attente » si les paiements abandonnés gonflent le CA.</comment>
+                    <comment>Default: canceled. Add "Pending Payment" if abandoned payments inflate revenue.</comment>
                 </field>
             </group>
             <group id="advanced" translate="label" sortOrder="20" showInDefault="1">
-                <label>Avancé</label>
+                <label>Advanced</label>
                 <field id="events_limit" translate="label comment" type="text" sortOrder="10" showInDefault="1" canRestore="1">
-                    <label>Nombre maximal d'événements par appel</label>
+                    <label>Maximum events per call</label>
                     <validate>validate-digits validate-digits-range digits-range-1-100</validate>
-                    <comment>Entre 1 et 100. Au-delà, seules les plus récentes sont renvoyées (champ « skipped »).</comment>
+                    <comment>Between 1 and 100. Beyond that, only the most recent orders are returned (see "skipped").</comment>
                 </field>
                 <field id="record_window_days" translate="label comment" type="text" sortOrder="20" showInDefault="1" canRestore="1">
-                    <label>Fenêtre du record (jours)</label>
+                    <label>Record window (days)</label>
                     <validate>validate-digits validate-digits-range digits-range-7-1095</validate>
-                    <comment>Le record est le meilleur CA journalier sur cette fenêtre, aujourd'hui exclu. Calculé une fois par jour et mis en cache.</comment>
+                    <comment>The record is the best daily revenue within this window, today excluded. Computed once a day and cached.</comment>
                 </field>
             </group>
         </section>

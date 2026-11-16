@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Crée l'intégration du cube (ressource ClickAndMortar_Cube::stats seule), l'active et affiche son jeton.
+ * Creates the cube integration (ClickAndMortar_Cube::stats resource only), activates it and prints its token.
  */
 class CreateIntegration extends Command
 {
@@ -34,11 +34,11 @@ class CreateIntegration extends Command
     protected function configure(): void
     {
         $this->setName('cm-cube:integration:create')
-            ->setDescription("Crée l'intégration du Cube Magento (lecture des statistiques seule) et affiche son jeton")
-            ->addOption('name', null, InputOption::VALUE_REQUIRED, "Nom de l'intégration", 'Cube Magento')
-            ->addOption('email', null, InputOption::VALUE_REQUIRED, 'E-mail de contact (facultatif)', '')
-            ->addOption('replace', null, InputOption::VALUE_NONE, "Supprime puis recrée l'intégration si elle existe (l'ancien jeton cesse de fonctionner)")
-            ->addOption('token-only', null, InputOption::VALUE_NONE, "N'affiche que le jeton (pour les scripts)");
+            ->setDescription("Create the Cube Magento integration (read-only stats access) and print its access token")
+            ->addOption('name', null, InputOption::VALUE_REQUIRED, "Integration name", 'Cube Magento')
+            ->addOption('email', null, InputOption::VALUE_REQUIRED, 'Contact email (optional)', '')
+            ->addOption('replace', null, InputOption::VALUE_NONE, "Delete and recreate the integration if it exists (the previous token stops working)")
+            ->addOption('token-only', null, InputOption::VALUE_NONE, "Print the token only (for scripts)");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -54,7 +54,7 @@ class CreateIntegration extends Command
         if ($existing->getId()) {
             if (!$input->getOption('replace')) {
                 $output->writeln(sprintf(
-                    '<error>L\'intégration « %s » existe déjà (id %d). Relancer avec --replace pour la recréer.</error>',
+                    '<error>Integration "%s" already exists (id %d). Run again with --replace to recreate it.</error>',
                     $name,
                     $existing->getId()
                 ));
@@ -76,7 +76,7 @@ class CreateIntegration extends Command
         $this->oauthService->createAccessToken($consumerId, true);
         $token = $this->oauthService->getAccessToken($consumerId);
         if (!$token || !$token->getToken()) {
-            $output->writeln('<error>Jeton introuvable après création.</error>');
+            $output->writeln('<error>Access token not found after creation.</error>');
             return Command::FAILURE;
         }
 
@@ -85,11 +85,11 @@ class CreateIntegration extends Command
             return Command::SUCCESS;
         }
 
-        $output->writeln(sprintf('Intégration « %s » créée (id %d), ressource : %s', $name, $integration->getId(), implode(', ', self::RESOURCES)));
-        $output->writeln('Jeton d\'accès : ' . $token->getToken());
+        $output->writeln(sprintf('Integration "%s" created (id %d), resource: %s', $name, $integration->getId(), implode(', ', self::RESOURCES)));
+        $output->writeln('Access token: ' . $token->getToken());
         if (!$this->scopeConfig->isSetFlag(self::BEARER_FLAG)) {
-            $output->writeln('<comment>Attention : les jetons d\'intégration ne sont pas acceptés comme « Bearer » sur cette boutique.</comment>');
-            $output->writeln('<comment>Activer : bin/magento config:set ' . self::BEARER_FLAG . ' 1</comment>');
+            $output->writeln('<comment>Warning: integration tokens are not accepted as standalone Bearer tokens on this store.</comment>');
+            $output->writeln('<comment>Enable with: bin/magento config:set ' . self::BEARER_FLAG . ' 1</comment>');
         }
         return Command::SUCCESS;
     }

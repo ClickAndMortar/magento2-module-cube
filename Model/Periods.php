@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Model;
 
 /**
- * Bornes temporelles d'un calcul, exprimées en UTC (format MySQL) comme sales_order.created_at.
- * Les bornes de début sont incluses, les bornes de fin exclues.
+ * Time boundaries of a computation, in UTC (MySQL format) like sales_order.created_at.
+ * Start boundaries are inclusive, end boundaries exclusive.
  */
 class Periods
 {
@@ -23,7 +23,7 @@ class Periods
     }
 
     /**
-     * Minuit local de $localDate (AAAA-MM-JJ), en UTC.
+     * Local midnight of $localDate (YYYY-MM-DD), in UTC.
      */
     public function dayStartUtc(string $localDate): string
     {
@@ -33,7 +33,7 @@ class Periods
     }
 
     /**
-     * Date locale décalée de $days jours (négatif = passé).
+     * Local date shifted by $days days (negative = past).
      */
     public function shiftDate(int $days, ?string $fromDate = null): string
     {
@@ -42,7 +42,7 @@ class Periods
     }
 
     /**
-     * Convertit une date UTC de la base en ISO 8601 dans le fuseau configuré.
+     * Converts a UTC database date to ISO 8601 in the configured timezone.
      */
     public function toLocalIso(string $utcSqlDate): string
     {
@@ -52,7 +52,7 @@ class Periods
     }
 
     /**
-     * Date locale (AAAA-MM-JJ) d'une date UTC de la base.
+     * Local date (YYYY-MM-DD) of a UTC database date.
      */
     public function toLocalDate(string $utcSqlDate): string
     {

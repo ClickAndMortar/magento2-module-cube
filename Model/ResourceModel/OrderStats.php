@@ -8,10 +8,10 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Select;
 
 /**
- * Requêtes SQL agrégées sur sales_order. Jamais de collection chargée en entier :
- * chaque méthode renvoie une ligne d'agrégat, des tranches de 15 min ou au plus $limit commandes.
+ * Aggregated SQL queries on sales_order. No collection is ever fully loaded:
+ * each method returns one aggregate row, 15-minute buckets or at most $limit orders.
  *
- * Les dates sont des chaînes UTC « AAAA-MM-JJ HH:MM:SS », comme sales_order.created_at.
+ * Dates are UTC strings "YYYY-MM-DD HH:MM:SS", like sales_order.created_at.
  */
 class OrderStats
 {
@@ -39,9 +39,9 @@ class OrderStats
     }
 
     /**
-     * CA et nombre de commandes par tranche de 15 min UTC (« AAAA-MM-JJ HH:MM »).
-     * Le regroupement en journées locales se fait ensuite en PHP, exact aux changements d'heure
-     * et pour les fuseaux décalés d'une demi-heure ou d'un quart d'heure.
+     * Revenue and order count per 15-minute UTC bucket ("YYYY-MM-DD HH:MM").
+     * Grouping into local days is then done in PHP, exact across DST changes
+     * and for timezones offset by half an hour or a quarter of an hour.
      *
      * @param int[] $storeIds
      * @param string[] $excludedStates
@@ -64,7 +64,7 @@ class OrderStats
     }
 
     /**
-     * Dernière commande comptée, avec la ville et sans aucune donnée personnelle.
+     * Last counted order, with its city and without any personal data.
      *
      * @param int[] $storeIds
      * @param string[] $excludedStates
@@ -78,7 +78,7 @@ class OrderStats
     }
 
     /**
-     * Les $limit commandes les plus récentes d'entity_id > $since, par entity_id croissant.
+     * The $limit most recent orders with entity_id > $since, by ascending entity_id.
      *
      * @param int[] $storeIds
      * @param string[] $excludedStates
@@ -134,7 +134,7 @@ class OrderStats
     }
 
     /**
-     * CA de la période pour les commandes d'entity_id < $beforeEntityId.
+     * Revenue of the period for orders with entity_id < $beforeEntityId.
      *
      * @param int[] $storeIds
      * @param string[] $excludedStates

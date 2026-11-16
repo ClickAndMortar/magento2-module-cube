@@ -1,6 +1,6 @@
 <?php
 /**
- * Click&Mortar — Cube Magento
+ * Click&Mortar - Cube Magento
  */
 declare(strict_types=1);
 

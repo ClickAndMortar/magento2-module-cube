@@ -7,7 +7,7 @@ use Magento\Directory\Model\Currency;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
- * Lecture de la configuration Stores > Configuration > Click&Mortar > Cube (portée globale).
+ * Reads Stores > Configuration > Click&Mortar > Cube (default scope).
  */
 class Config
 {
@@ -62,7 +62,7 @@ class Config
     }
 
     /**
-     * @return int[] vide = toutes les vues de boutique
+     * @return int[] empty = all store views
      */
     public function getStoreIds(): array
     {

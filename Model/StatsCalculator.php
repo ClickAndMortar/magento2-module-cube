@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Model;
 
 /**
- * Calculs purs (sans base de données) : regroupement par jour local, écarts, record, indicateurs d'événements.
+ * Pure computations (no database): grouping by local day, deltas, record, event flags.
  */
 class StatsCalculator
 {
     /**
-     * Regroupe des tranches de 15 min UTC (« AAAA-MM-JJ HH:MM ») en journées locales.
+     * Groups 15-minute UTC buckets ("YYYY-MM-DD HH:MM") into local days.
      *
      * @param array<int, array{bucket: string, revenue: float|string, orders: int|string}> $buckets
-     * @return array<string, array{revenue: float, orders: int}> clé = date locale
+     * @return array<string, array{revenue: float, orders: int}> key = local date
      */
     public function aggregateDays(array $buckets, \DateTimeZone $timezone): array
     {
@@ -31,7 +31,7 @@ class StatsCalculator
     }
 
     /**
-     * Écart en % de $current par rapport à $previous, arrondi à 0,1 ; null si $previous est nul.
+     * Change in % of $current vs $previous, rounded to 0.1; null when $previous is zero.
      */
     public function deltaPct(float $current, float $previous): ?float
     {
@@ -47,7 +47,7 @@ class StatsCalculator
     }
 
     /**
-     * Meilleure journée (la plus récente en cas d'égalité), ou null si aucune vente.
+     * Best day (most recent one on ties), or null when there are no sales.
      *
      * @param array<string, array{revenue: float, orders: int}> $days
      * @return array{date: string, revenue: float}|null
@@ -72,13 +72,13 @@ class StatsCalculator
     }
 
     /**
-     * Indicateurs « première commande du jour » et « record battu » pour des commandes triées par entity_id croissant.
+     * "First order of the day" and "record broken" flags for orders sorted by ascending entity_id.
      *
      * @param array<int, array{entity_id: int, amount: float, is_today: bool}> $orders
-     * @param int|null $firstTodayEntityId plus petit entity_id compté aujourd'hui
-     * @param float $revenueBeforeFirstToday CA du jour des commandes antérieures à la première commande du jour de la liste
-     * @param float|null $record meilleur CA journalier hors aujourd'hui
-     * @return array<int, array{first_of_day: bool, record_broken: bool}> clé = entity_id
+     * @param int|null $firstTodayEntityId lowest entity_id counted today
+     * @param float $revenueBeforeFirstToday today's revenue from orders before the list's first order of today
+     * @param float|null $record best daily revenue, today excluded
+     * @return array<int, array{first_of_day: bool, record_broken: bool}> key = entity_id
      */
     public function eventFlags(
         array $orders,

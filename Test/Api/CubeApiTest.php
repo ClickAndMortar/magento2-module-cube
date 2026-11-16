@@ -6,11 +6,11 @@ namespace ClickAndMortar\Cube\Test\Api;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests d'API de bout en bout contre une instance Magento réelle (banc docker/ du module) :
- * commandes de référence insérées en base à des heures choisies, puis appels REST avec un vrai jeton d'intégration.
+ * End-to-end API test against a real Magento instance (the module's docker/ bench):
+ * reference orders are inserted at chosen times, then REST calls are made with a real integration token.
  *
- * ⚠️ Vide sales_order : ne jamais lancer sur une base qui n'est pas une base de test.
- * Variables : CUBE_BASE_URL, CUBE_TOKEN, CUBE_DB_DSN (défaut mysql:host=db;dbname=magento), CUBE_DB_USER, CUBE_DB_PASSWORD.
+ * WARNING: empties sales_order. Never run it against anything but a test database.
+ * Variables: CUBE_BASE_URL, CUBE_TOKEN, CUBE_DB_DSN (default mysql:host=db;dbname=magento), CUBE_DB_USER, CUBE_DB_PASSWORD.
  */
 class CubeApiTest extends TestCase
 {
@@ -30,7 +30,7 @@ class CubeApiTest extends TestCase
         self::$magentoRoot = getenv('CUBE_MAGENTO_ROOT') ?: getcwd();
         $dbName = (string) self::$pdo->query('SELECT DATABASE()')->fetchColumn();
         if (!in_array($dbName, ['magento', 'magento_test'], true)) {
-            self::fail("Base « $dbName » refusée : ces tests vident sales_order.");
+            self::fail("Database \"$dbName\" refused: this test empties sales_order.");
         }
     }
 
@@ -49,29 +49,29 @@ class CubeApiTest extends TestCase
         $todayStart = $now->setTime(0, 0);
         $elapsed = $now->getTimestamp() - $todayStart->getTimestamp();
         if ($elapsed < 300) {
-            self::markTestSkipped('Lancer ce test plus de 5 minutes après minuit (Europe/Paris).');
+            self::markTestSkipped('Run this test more than 5 minutes after midnight (Europe/Paris).');
         }
         $yesterdayStart = $todayStart->modify('-1 day');
         $yesterdaySame = new \DateTimeImmutable($yesterdayStart->format('Y-m-d') . ' ' . $now->format('H:i:s'), self::$tz);
         $at = static fn (\DateTimeImmutable $from, \DateTimeImmutable $to, float $f) =>
             $from->setTimestamp((int) ($from->getTimestamp() + ($to->getTimestamp() - $from->getTimestamp()) * $f));
 
-        // Historique
+        // History
         $this->order($todayStart->modify('-9 days')->setTime(15, 0), 2000.0, 1, 'Marseille');
         $this->order($todayStart->modify('-3 days')->setTime(12, 0), 1500.0, 1, 'Paris');
         $this->order($todayStart->modify('-2 days')->setTime(23, 50), 10.0, 1, 'Lille');
-        // Hier : 2 commandes avant la même heure, 1 après
+        // Yesterday: 2 orders before the same time, 1 after
         $this->order($at($yesterdayStart, $yesterdaySame, 0.3), 60.0, 1, 'Rennes');
         $this->order($at($yesterdayStart, $yesterdaySame, 0.7), 40.0, 1, 'Rennes');
         $lastYesterday = $this->order($at($yesterdaySame, $todayStart, 0.5), 500.0, 1, 'Rennes');
-        // Aujourd'hui : 3 commandes comptées + 1 annulée
+        // Today: 3 counted orders + 1 canceled
         $firstToday = $this->order($at($todayStart, $now, 0.2), 100.0, 2, 'Lyon');
         $this->order($at($todayStart, $now, 0.5), 50.0, 1, 'Nantes');
         $this->order($at($todayStart, $now, 0.6), 999.0, 9, 'Nulle-part', 'canceled');
         $lastToday = $this->order($at($todayStart, $now, 0.8), 70.0, 3, 'Bordeaux');
         $this->magento('cache:flush');
 
-        // --- Sécurité
+        // --- Security
         self::assertSame(401, $this->call('/V1/cm-cube/stats', null)['status']);
 
         // --- Stats
@@ -103,14 +103,14 @@ class CubeApiTest extends TestCase
         self::assertSame(
             ['entity_id', 'increment_id', 'amount', 'city', 'items', 'created_at'],
             array_keys($stats['last_order']),
-            'Aucune donnée personnelle dans last_order'
+            'No personal data in last_order'
         );
         self::assertSame($lastToday, $stats['last_order']['entity_id']);
         self::assertSame('Bordeaux', $stats['last_order']['city']);
         self::assertSame(3, $stats['last_order']['items']);
         self::assertSame($lastToday, $stats['last_entity_id']);
 
-        // --- Événements
+        // --- Events
         $cursor = $this->get('/V1/cm-cube/events?since=0');
         self::assertSame([], $cursor['events']);
         self::assertSame($lastToday, $cursor['last_entity_id']);
@@ -128,7 +128,7 @@ class CubeApiTest extends TestCase
         self::assertSame([$lastToday], array_column($limited['events'], 'entity_id'));
         self::assertSame(2, $limited['skipped']);
 
-        // --- Record sur 7 jours (1500), battu par une nouvelle commande
+        // --- 7-day record (1500), broken by a new order
         $this->magento('config:set cm_cube/advanced/record_window_days 7');
         $big = $this->order($now->modify('-1 minute'), 1400.0, 1, 'Toulouse');
         $this->magento('cache:flush');
@@ -140,7 +140,7 @@ class CubeApiTest extends TestCase
         self::assertTrue($events['events'][0]['record_broken']);
         self::assertFalse($events['events'][0]['first_of_day']);
 
-        // --- Périmètre : états exclus et boutiques
+        // --- Scope: excluded states and stores
         $this->magento("config:set cm_cube/general/excluded_states ''");
         $this->magento('cache:flush');
         self::assertSame(5, $this->get('/V1/cm-cube/stats')['today']['orders']);
@@ -149,11 +149,11 @@ class CubeApiTest extends TestCase
         $this->magento('cache:flush');
         $stats = $this->get('/V1/cm-cube/stats');
         self::assertSame(0, $stats['today']['orders']);
-        self::assertNull($stats['last_order'] ?? null, 'Magento < 2.4.7 omet les champs null');
+        self::assertNull($stats['last_order'] ?? null, 'Magento < 2.4.7 omits null fields');
         self::assertSame([99], $stats['store_ids']);
         $this->magento("config:set cm_cube/general/store_ids ''");
 
-        // --- Désactivation
+        // --- Disabled API
         $this->magento('config:set cm_cube/general/enabled 0');
         $this->magento('cache:flush');
         self::assertSame(403, $this->call('/V1/cm-cube/stats')['status']);
@@ -184,7 +184,7 @@ class CubeApiTest extends TestCase
             'INSERT INTO sales_order (state, status, store_id, base_grand_total, grand_total, total_qty_ordered,
                 base_currency_code, order_currency_code, customer_is_guest, customer_email, customer_firstname,
                 customer_lastname, created_at, updated_at)
-             VALUES (?, ?, 1, ?, ?, ?, \'EUR\', \'EUR\', 1, \'secret@example.com\', \'Jeanne\', \'Secrète\', ?, ?)'
+             VALUES (?, ?, 1, ?, ?, ?, \'EUR\', \'EUR\', 1, \'secret@example.com\', \'Jane\', \'Secretname\', ?, ?)'
         );
         $stmt->execute([$state, $state, $amount, $amount, $qty, $utc, $utc]);
         $id = (int) self::$pdo->lastInsertId();
@@ -192,14 +192,14 @@ class CubeApiTest extends TestCase
             ->execute([sprintf('T%08d', $id), $id]);
         self::$pdo->prepare(
             "INSERT INTO sales_order_address (parent_id, address_type, city, country_id, firstname, lastname, street, postcode)
-             VALUES (?, 'shipping', ?, 'FR', 'Jeanne', 'Secrète', '1 rue Privée', '75001')"
+             VALUES (?, 'shipping', ?, 'FR', 'Jane', 'Secretname', '1 Private Street', '75001')"
         )->execute([$id, $city]);
         return $id;
     }
 
     private function magento(string $command): void
     {
-        // phpcs:ignore Magento2.Security.InsecureFunction -- test de bout en bout, commande fixe
+        // phpcs:ignore Magento2.Security.InsecureFunction -- end-to-end test, fixed command
         exec('cd ' . escapeshellarg(self::$magentoRoot) . ' && php bin/magento ' . $command . ' 2>&1', $out, $code);
         self::assertSame(0, $code, "bin/magento $command\n" . implode("\n", $out));
     }
@@ -211,7 +211,8 @@ class CubeApiTest extends TestCase
         $json = json_decode($response['body'], true);
         self::assertIsArray($json);
         self::assertStringNotContainsString('secret@example.com', $response['body']);
-        self::assertStringNotContainsString('Secrète', $response['body']);
+        self::assertStringNotContainsString('Secretname', $response['body']);
+        self::assertStringNotContainsString('Private Street', $response['body']);
         return $json;
     }
 

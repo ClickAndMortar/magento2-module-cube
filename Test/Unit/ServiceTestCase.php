@@ -42,7 +42,7 @@ abstract class ServiceTestCase extends TestCase
         $this->config->method('getBaseCurrency')->willReturn('EUR');
 
         $this->clock = $this->createStub(Clock::class);
-        // 16/11/2026 14:00 à Paris
+        // 2026-11-16 14:00 in Paris
         $this->clock->method('now')->willReturn(new \DateTimeImmutable('2026-11-16 13:00:00', new \DateTimeZone('UTC')));
 
         $this->orderStats = $this->createMock(OrderStats::class);
@@ -55,7 +55,7 @@ abstract class ServiceTestCase extends TestCase
     }
 
     /**
-     * Fabrique simulée qui renvoie un nouvel objet de données à chaque appel.
+     * Mocked factory returning a new data object on each call.
      */
     protected function factory(string $factoryClass, string $dataClass): MockObject
     {

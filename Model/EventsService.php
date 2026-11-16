@@ -26,7 +26,7 @@ class EventsService implements EventsInterface
     public function getEvents($since = 0, $limit = 0)
     {
         if (!$this->config->isEnabled()) {
-            throw new WebapiException(__("L'API du cube est désactivée."), 0, WebapiException::HTTP_FORBIDDEN);
+            throw new WebapiException(__('The cube API is disabled.'), 0, WebapiException::HTTP_FORBIDDEN);
         }
 
         $since = max(0, (int) $since);
@@ -41,8 +41,8 @@ class EventsService implements EventsInterface
         $maxId = $this->orderStats->maxEntityId($storeIds, $states);
         $rows = $since > 0 ? $this->orderStats->ordersSince($since, $limit, $storeIds, $states) : [];
         if ($rows === []) {
-            // since=0 : premier appel, on ne fait que donner le curseur.
-            // since > max : base restaurée ou commandes supprimées, on recale le curseur.
+            // since=0: first call, only hand out the cursor.
+            // since > max: database restored or orders deleted, realign the cursor.
             return $result->setLastEntityId($since > 0 ? min($since, $maxId) : $maxId);
         }
 

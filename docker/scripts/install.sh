@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installe Magento $MAGENTO_VERSION (vide, sans données d'exemple) puis le module depuis /module.
+# Installs a blank Magento $MAGENTO_VERSION (no sample data), then the module from /module.
 set -euo pipefail
 cd /var/www/html
 if [ ! -f composer.json ]; then
@@ -7,8 +7,8 @@ if [ ! -f composer.json ]; then
     --repository-url=https://mirror.mage-os.org/ \
     "magento/project-community-edition=${MAGENTO_VERSION}" .
   case "$MAGENTO_VERSION" in
-    # 2.4.6 impose league/flysystem 2.x, visé par un avis de sécurité que Composer >= 2.9 bloque.
-    # Banc de test uniquement : on autorise l'installation.
+    # 2.4.6 requires league/flysystem 2.x, flagged by a security advisory that Composer >= 2.9 blocks.
+    # Test bench only: allow the installation.
     2.4.6*) composer config audit.block-insecure false ;;
   esac
 fi

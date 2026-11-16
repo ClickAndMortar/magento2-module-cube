@@ -31,7 +31,7 @@ class StatsService implements StatsInterface
     public function getStats()
     {
         if (!$this->config->isEnabled()) {
-            throw new WebapiException(__("L'API du cube est désactivée."), 0, WebapiException::HTTP_FORBIDDEN);
+            throw new WebapiException(__('The cube API is disabled.'), 0, WebapiException::HTTP_FORBIDDEN);
         }
 
         $periods = $this->periodResolver->resolve($this->config->getTimezone(), $this->clock->now());

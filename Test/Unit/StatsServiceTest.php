@@ -42,7 +42,7 @@ class StatsServiceTest extends ServiceTestCase
             ->willReturn([
                 ['bucket' => '2026-11-10 10:00', 'revenue' => '1200.00', 'orders' => '12'],
                 ['bucket' => '2026-11-15 12:30', 'revenue' => '700.00', 'orders' => '7'],
-                ['bucket' => '2026-11-15 22:45', 'revenue' => '100.00', 'orders' => '1'], // 23:45 locale, encore le 15
+                ['bucket' => '2026-11-15 22:45', 'revenue' => '100.00', 'orders' => '1'], // 23:45 local time, still the 15th
             ]);
         $this->orderStats->method('lastOrder')->willReturn([
             'entity_id' => '1234', 'increment_id' => '000001234', 'amount' => '89.9000',

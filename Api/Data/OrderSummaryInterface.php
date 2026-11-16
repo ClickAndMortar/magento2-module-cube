@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Api\Data;
 
 /**
- * Résumé d'une commande, sans donnée personnelle (ni nom, ni e-mail, ni adresse complète).
+ * Order summary without any personal data (no name, no email, no full address).
  *
  * @api
  */
@@ -40,7 +40,7 @@ interface OrderSummaryInterface
     public function setIncrementId($incrementId);
 
     /**
-     * Montant TTC (base_grand_total), en devise de base.
+     * Order total incl. tax (base_grand_total), in base currency.
      *
      * @return float
      */
@@ -53,7 +53,7 @@ interface OrderSummaryInterface
     public function setAmount($amount);
 
     /**
-     * Ville de livraison (de facturation pour une commande sans livraison), ou chaîne vide.
+     * Shipping city (billing city for orders without shipping), or an empty string.
      *
      * @return string
      */
@@ -66,7 +66,7 @@ interface OrderSummaryInterface
     public function setCity($city);
 
     /**
-     * Nombre d'articles (quantité totale commandée).
+     * Number of items (total quantity ordered).
      *
      * @return int
      */
@@ -79,7 +79,7 @@ interface OrderSummaryInterface
     public function setItems($items);
 
     /**
-     * Date ISO 8601 dans le fuseau configuré (ex. 2026-11-16T14:03:12+01:00).
+     * ISO 8601 date in the configured timezone (e.g. 2026-11-16T14:03:12+01:00).
      *
      * @return string
      */

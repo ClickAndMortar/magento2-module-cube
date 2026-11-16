@@ -12,7 +12,7 @@ interface OrderEventInterface extends OrderSummaryInterface
     public const RECORD_BROKEN = 'record_broken';
 
     /**
-     * Première commande de la journée locale (aujourd'hui seulement).
+     * First counted order of the local day (today only).
      *
      * @return bool
      */
@@ -25,7 +25,7 @@ interface OrderEventInterface extends OrderSummaryInterface
     public function setFirstOfDay($firstOfDay);
 
     /**
-     * Cette commande fait passer le CA du jour au-dessus du record journalier.
+     * This order pushes today's revenue above the daily record.
      *
      * @return bool
      */

@@ -13,7 +13,7 @@ interface DayTotalsInterface
     public const ORDERS = 'orders';
 
     /**
-     * Date locale (fuseau configuré), au format AAAA-MM-JJ.
+     * Local date (configured timezone), YYYY-MM-DD.
      *
      * @return string
      */

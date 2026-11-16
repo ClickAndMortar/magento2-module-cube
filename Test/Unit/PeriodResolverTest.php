@@ -36,23 +36,23 @@ class PeriodResolverTest extends TestCase
     public static function casesProvider(): array
     {
         return [
-            'Paris, hiver' => [
+            'Paris, winter' => [
                 'Europe/Paris', '2026-11-16 13:00:00', '2026-11-16',
                 '2026-11-15 23:00:00', '2026-11-16 23:00:00', '2026-11-14 23:00:00', '2026-11-15 13:00:00',
             ],
-            'Paris, juste après minuit local' => [
+            'Paris, just after local midnight' => [
                 'Europe/Paris', '2026-11-15 23:30:00', '2026-11-16',
                 '2026-11-15 23:00:00', '2026-11-16 23:00:00', '2026-11-14 23:00:00', '2026-11-14 23:30:00',
             ],
-            'Paris, passage à l\'heure d\'été (journée de 23 h)' => [
+            'Paris, switch to summer time (23-hour day)' => [
                 'Europe/Paris', '2026-03-29 10:00:00', '2026-03-29',
                 '2026-03-28 23:00:00', '2026-03-29 22:00:00', '2026-03-27 23:00:00', '2026-03-28 11:00:00',
             ],
-            'Paris, lendemain du passage à l\'heure d\'été' => [
+            'Paris, day after the switch to summer time' => [
                 'Europe/Paris', '2026-03-30 10:00:00', '2026-03-30',
                 '2026-03-29 22:00:00', '2026-03-30 22:00:00', '2026-03-28 23:00:00', '2026-03-29 10:00:00',
             ],
-            'Paris, passage à l\'heure d\'hiver (journée de 25 h)' => [
+            'Paris, switch to winter time (25-hour day)' => [
                 'Europe/Paris', '2026-10-25 12:00:00', '2026-10-25',
                 '2026-10-24 22:00:00', '2026-10-25 23:00:00', '2026-10-23 22:00:00', '2026-10-24 11:00:00',
             ],
@@ -60,7 +60,7 @@ class PeriodResolverTest extends TestCase
                 'UTC', '2026-11-16 08:15:00', '2026-11-16',
                 '2026-11-16 00:00:00', '2026-11-17 00:00:00', '2026-11-15 00:00:00', '2026-11-15 08:15:00',
             ],
-            'Kolkata, décalage d\'une demi-heure' => [
+            'Kolkata, half-hour offset' => [
                 'Asia/Kolkata', '2026-11-16 20:00:00', '2026-11-17',
                 '2026-11-16 18:30:00', '2026-11-17 18:30:00', '2026-11-15 18:30:00', '2026-11-15 20:00:00',
             ],

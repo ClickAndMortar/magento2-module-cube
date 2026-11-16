@@ -1,99 +1,106 @@
-# ClickAndMortar_Cube — statistiques de ventes pour le Cube Magento
+# ClickAndMortar_Cube: live sales stats for the Cube Magento
 
-Module Magento 2 de [Click&Mortar](https://www.clickandmortar.fr) qui expose, en lecture seule, les agrégats de ventes
-du jour consommés par le **Cube Magento** (cube imprimé en 3D avec un écran : CA du jour, commandes, panier moyen,
-animation et bip à chaque nouvelle commande).
+Magento 2 module by [Click&Mortar](https://www.clickandmortar.fr) that exposes today's sales aggregates through a
+read-only REST API. It feeds the **Cube Magento**, a 3D-printed desk cube with a small screen that shows today's
+revenue, order count and average order value, and plays an animation and a beep on every new order.
 
-- `GET /rest/V1/cm-cube/stats` : CA et commandes du jour, comparaison avec hier à la même heure, 7 derniers jours,
-  objectif, record, dernière commande.
-- `GET /rest/V1/cm-cube/events?since=<entity_id>` : nouvelles commandes depuis un identifiant, avec les indicateurs
-  « première commande du jour » et « record battu ».
+> [!IMPORTANT]
+> **No personal data is ever exposed.** The API returns aggregates (revenue, order counts, averages) and, for each
+> order, only its ID, amount, item count, creation date and **city**. Customer names, email addresses, street
+> addresses, postcodes, phone numbers, payment details and IP addresses are never read into the response. The
+> integration token can reach nothing else: its only ACL resource is `ClickAndMortar_Cube::stats`, which grants no
+> access to orders, customers or any other Magento API. The end-to-end test inserts orders with a known name, email
+> and street address, and fails if any of them shows up in a response.
 
-Calcul côté serveur en SQL agrégé (aucune collection chargée), sans aucune donnée personnelle : ni nom, ni e-mail,
-ni adresse, seulement la ville et le nombre d'articles.
+- `GET /rest/V1/cm-cube/stats`: today's revenue and orders, comparison with yesterday at the same time, last 7 days,
+  daily goal, record, last order.
+- `GET /rest/V1/cm-cube/events?since=<entity_id>`: new orders since an ID, with "first order of the day" and
+  "record broken" flags.
 
-## Compatibilité
+Everything is computed server-side with aggregated SQL queries; no order collection is ever loaded.
 
-| Magento Open Source | PHP | Base | OpenSearch | Résultat |
+## Compatibility
+
+| Magento Open Source | PHP | Database | OpenSearch | Result |
 |---|---|---|---|---|
-| 2.4.6-p15 | 8.2.35 | MariaDB 10.6 | 2.19.3 | ✅ 24 tests unitaires (PHPUnit 9.6) + test d'API de bout en bout (102 assertions) |
-| 2.4.8-p5 | 8.3.36 | MariaDB 11.4 | 2.19.3 | ✅ idem (PHPUnit 10.5) |
-| 2.4.9 | 8.4.27 | MariaDB 11.4 | 2.19.3 | ✅ idem (PHPUnit 12.5) |
+| 2.4.6-p15 | 8.2.35 | MariaDB 10.6 | 2.19.3 | ✅ 24 unit tests (PHPUnit 9.6) + end-to-end API test (110 assertions) |
+| 2.4.8-p5 | 8.3.36 | MariaDB 11.4 | 2.19.3 | ✅ same (PHPUnit 10.5) |
+| 2.4.9 | 8.4.27 | MariaDB 11.4 | 2.19.3 | ✅ same (PHPUnit 12.5) |
 
-Testé le 16/11/2026 avec le banc `docker/` (Magento Open Source téléchargé depuis le miroir Mage-OS, code identique
-à repo.magento.com). La 2.4.7 n'a pas été testée mais se situe entre deux versions validées. Adobe Commerce et
-Mage-OS devraient fonctionner (mêmes tables `sales_order`), sans avoir été testés.
+Tested on 2026-11-16 with the `docker/` bench (Magento Open Source downloaded from the Mage-OS mirror, which ships the
+same code as repo.magento.com). 2.4.7 was not tested but sits between two validated versions. Adobe Commerce and
+Mage-OS should work (same `sales_order` tables) but have not been tested.
 
-PHPCS (standard `Magento2` de magento/magento-coding-standard) : 0 erreur.
+PHPCS (`Magento2` standard from magento/magento-coding-standard): 0 errors.
 
 ## Installation
 
-Le module n'est pas sur Packagist : déclarer ce dépôt GitHub dans le `composer.json` de la boutique.
+The module is not on Packagist: declare this GitHub repository in your store's `composer.json`.
 
 ```bash
 composer config repositories.cm-cube vcs https://github.com/ClickAndMortar/magento2-module-cube
 composer require clickandmortar/module-cube:^1.0
 bin/magento module:enable ClickAndMortar_Cube
 bin/magento setup:upgrade
-# en mode production :
+# in production mode:
 bin/magento setup:di:compile && bin/magento setup:static-content:deploy -f
 ```
 
-## Jeton d'accès pour le cube
+## Access token for the cube
 
-Le cube s'authentifie avec un **jeton d'intégration** qui ne porte que la ressource ACL
-`ClickAndMortar_Cube::stats` (« Click&Mortar Cube > Lire les statistiques du cube (API) »). Il ne peut rien lire
-d'autre.
+The cube authenticates with an **integration token** that carries a single ACL resource, `ClickAndMortar_Cube::stats`
+("Click&Mortar Cube > Read cube statistics (API)"). It cannot read anything else.
 
-### En ligne de commande (recommandé)
+### From the command line (recommended)
 
 ```bash
-bin/magento cm-cube:integration:create              # crée « Cube Magento », l'active et affiche le jeton
-bin/magento cm-cube:integration:create --replace    # régénère (l'ancien jeton cesse de fonctionner)
-bin/magento cm-cube:integration:create --token-only # n'affiche que le jeton, pour un script
+bin/magento cm-cube:integration:create              # creates "Cube Magento", activates it and prints the token
+bin/magento cm-cube:integration:create --replace    # regenerates it (the previous token stops working)
+bin/magento cm-cube:integration:create --token-only # prints the token only, for scripts
 ```
 
-### Depuis l'admin
+### From the admin
 
-1. Système > Extensions > Intégrations > Ajouter une intégration : nom « Cube Magento ».
-2. Onglet « API » : accès aux ressources « Personnalisé », cocher seulement « Click&Mortar Cube ».
-3. Enregistrer, puis « Activer » et « Autoriser » : copier le **jeton d'accès** (« Access Token »).
+1. System > Extensions > Integrations > Add New Integration: name it "Cube Magento".
+2. "API" tab: Resource Access "Custom", tick "Click&Mortar Cube" only.
+3. Save, then "Activate" and "Allow": copy the **Access Token**.
 
-### Autoriser le jeton d'intégration en « Bearer »
+### Allow the integration token as a Bearer token
 
-Depuis Magento 2.4.4, un jeton d'intégration n'est accepté seul en en-tête `Authorization: Bearer` que si l'option
-est activée :
+Since Magento 2.4.4, an integration token is only accepted on its own in an `Authorization: Bearer` header when this
+option is enabled:
 
 ```bash
 bin/magento config:set oauth/consumer/enable_integration_as_bearer 1
 ```
 
-ou Stores > Configuration > Services > OAuth > Consumer Settings > « Allow OAuth Access Tokens to be used as standalone
-Bearer tokens » = Yes. Sans cette option, il faudrait signer chaque requête en OAuth 1.0a, ce que le firmware du cube
-ne fait pas.
+or Stores > Configuration > Services > OAuth > Consumer Settings > "Allow OAuth Access Tokens to be used as standalone
+Bearer tokens" = Yes. Without it, every request would have to be signed with OAuth 1.0a, which the cube firmware does
+not do.
 
 ## Configuration
 
-Stores > Configuration > Click&Mortar > Cube (portée globale) :
+Stores > Configuration > Click&Mortar > Cube (default scope). Admin labels are in English, with a French translation
+(`i18n/fr_FR.csv`).
 
-| Champ | Chemin | Défaut |
+| Field | Path | Default |
 |---|---|---|
-| Activer l'API du cube | `cm_cube/general/enabled` | Oui (désactivée : réponses 403) |
-| Écrans actifs | `cm_cube/general/screens` | `today,compare,week,last_order,goal` |
-| Objectif de CA du jour (devise de base, 0 = aucun) | `cm_cube/general/daily_goal` | 0 (l'écran `goal` disparaît alors de `screens`) |
-| Fuseau horaire | `cm_cube/general/timezone` | `Europe/Paris` |
-| Boutiques comptées (vide = toutes) | `cm_cube/general/store_ids` | toutes |
-| États de commande exclus | `cm_cube/general/excluded_states` | `canceled` |
-| Événements maximum par appel (1 à 100) | `cm_cube/advanced/events_limit` | 20 |
-| Fenêtre du record, en jours (7 à 1095) | `cm_cube/advanced/record_window_days` | 365 |
+| Enable cube API | `cm_cube/general/enabled` | Yes (when disabled: 403 responses) |
+| Enabled screens | `cm_cube/general/screens` | `today,compare,week,last_order,goal` |
+| Daily revenue goal (base currency, 0 = none) | `cm_cube/general/daily_goal` | 0 (the `goal` screen is then removed from `screens`) |
+| Timezone | `cm_cube/general/timezone` | `Europe/Paris` |
+| Store views counted (empty = all) | `cm_cube/general/store_ids` | all |
+| Excluded order states | `cm_cube/general/excluded_states` | `canceled` |
+| Maximum events per call (1 to 100) | `cm_cube/advanced/events_limit` | 20 |
+| Record window, in days (7 to 1095) | `cm_cube/advanced/record_window_days` | 365 |
 
-## Exemples
+## Examples
 
 ```bash
-TOKEN=…   # jeton d'intégration
-curl -s -H "Authorization: Bearer $TOKEN" https://boutique.example/rest/V1/cm-cube/stats
-curl -s -H "Authorization: Bearer $TOKEN" "https://boutique.example/rest/V1/cm-cube/events?since=0"
-curl -s -H "Authorization: Bearer $TOKEN" "https://boutique.example/rest/V1/cm-cube/events?since=1234&limit=5"
+TOKEN=…   # integration token
+curl -s -H "Authorization: Bearer $TOKEN" https://shop.example/rest/V1/cm-cube/stats
+curl -s -H "Authorization: Bearer $TOKEN" "https://shop.example/rest/V1/cm-cube/events?since=0"
+curl -s -H "Authorization: Bearer $TOKEN" "https://shop.example/rest/V1/cm-cube/events?since=1234&limit=5"
 ```
 
 ### `GET /V1/cm-cube/stats`
@@ -131,20 +138,21 @@ curl -s -H "Authorization: Bearer $TOKEN" "https://boutique.example/rest/V1/cm-c
 }
 ```
 
-| Champ | Sens |
+| Field | Meaning |
 |---|---|
-| `today` | Depuis minuit (fuseau configuré) : CA = somme des `base_grand_total`, en devise de base, hors états exclus |
-| `yesterday_same_time` | Hier, de minuit jusqu'à la même heure locale qu'en ce moment (journées de 23 h ou 25 h gérées) |
-| `revenue_delta_pct`, `orders_delta_pct` | Écart en % avec hier à la même heure, arrondi à 0,1 ; `null` si hier = 0 |
-| `goal_revenue`, `goal_progress_pct` | Objectif et avancement (peut dépasser 100) ; `null` sans objectif |
-| `record_revenue`, `record_date` | Meilleur CA journalier de la fenêtre, aujourd'hui exclu ; `null` sans vente |
-| `record_broken_today` | Le CA du jour dépasse déjà le record |
-| `week` | 7 jours, du plus ancien à aujourd'hui (journée en cours) |
-| `last_order` | Dernière commande comptée, tous jours confondus ; `null` s'il n'y en a pas |
-| `last_entity_id` | Curseur initial pour `/events` |
+| `today` | Since midnight (configured timezone): revenue = sum of `base_grand_total`, in base currency, excluded states left out |
+| `yesterday_same_time` | Yesterday, from midnight up to the same local time as now (23-hour and 25-hour DST days handled) |
+| `revenue_delta_pct`, `orders_delta_pct` | Change in % vs yesterday at the same time, rounded to 0.1; `null` when yesterday = 0 |
+| `goal_revenue`, `goal_progress_pct` | Goal and progress (may exceed 100); `null` without a goal |
+| `record_revenue`, `record_date` | Best daily revenue within the window, today excluded; `null` when there are no sales |
+| `record_broken_today` | Today's revenue already exceeds the record |
+| `week` | 7 days, oldest first, today (day so far) last |
+| `last_order` | Last counted order, any day; `null` when there is none |
+| `last_entity_id` | Initial cursor for `/events` |
 
-⚠️ **Champs `null`** : Magento 2.4.6 **omet** les champs nuls du JSON, alors que 2.4.7+ les renvoie à `null`. Le
-client doit traiter « absent » et `null` de la même façon.
+> [!WARNING]
+> **`null` fields**: Magento 2.4.6 **omits** null fields from the JSON, while 2.4.7+ returns them as `null`. Clients
+> must treat "missing" and `null` the same way.
 
 ### `GET /V1/cm-cube/events?since=<entity_id>&limit=<n>`
 
@@ -161,31 +169,31 @@ client doit traiter « absent » et `null` de la même façon.
 }
 ```
 
-- `since=0` (premier appel) : aucune commande, seulement le curseur `last_entity_id`. Le cube ne rejoue donc pas
-  l'historique au démarrage.
-- Les commandes d'`entity_id > since` sont renvoyées par ordre croissant. S'il y en a plus que `limit` (défaut : la
-  configuration, plafond 100), seules les **plus récentes** sont renvoyées et `skipped` compte les autres.
-- Le client renvoie `last_entity_id` au prochain appel. Si `since` dépasse la dernière commande (base restaurée),
-  `last_entity_id` est recalé sur la dernière commande existante.
-- `first_of_day` : première commande comptée de la journée locale. `record_broken` : cette commande fait passer le CA
-  du jour au-dessus du record. Les deux valent `false` pour une commande d'un jour précédent.
+- `since=0` (first call): no order is returned, only the `last_entity_id` cursor, so the cube does not replay history
+  on startup.
+- Orders with `entity_id > since` are returned in ascending order. When there are more than `limit` (default: the
+  configured value, capped at 100), only the **most recent** ones are returned and `skipped` counts the others.
+- The client sends `last_entity_id` back on its next call. If `since` is beyond the last order (restored database),
+  `last_entity_id` is realigned on the last existing order.
+- `first_of_day`: first counted order of the local day. `record_broken`: this order pushes today's revenue above the
+  record. Both are `false` for orders from a previous day.
 
-### Codes d'erreur
+### Error codes
 
 | Code | Cause |
 |---|---|
-| 401 | Jeton absent, invalide, ou jeton d'intégration refusé en Bearer (voir l'option ci-dessus) |
-| 403 | API désactivée dans la configuration du module |
-| 404 | Module absent : le cube bascule sur l'API native (ci-dessous) |
+| 401 | Missing or invalid token, or integration token refused as Bearer (see the option above) |
+| 403 | API disabled in the module configuration |
+| 404 | Module not installed: the cube falls back to the native API (below) |
 
-## Sans le module : repli du firmware sur l'API native
+## Without the module: firmware fallback on the native API
 
-Si `GET /V1/cm-cube/stats` renvoie **404**, le cube passe en mode dégradé sur l'API REST standard :
+When `GET /V1/cm-cube/stats` returns **404**, the cube switches to a degraded mode based on the standard REST API:
 
 ```
 GET /rest/V1/orders
     ?searchCriteria[filterGroups][0][filters][0][field]=created_at
-    &searchCriteria[filterGroups][0][filters][0][value]=<minuit local converti en UTC, AAAA-MM-JJ HH:MM:SS>
+    &searchCriteria[filterGroups][0][filters][0][value]=<local midnight converted to UTC, YYYY-MM-DD HH:MM:SS>
     &searchCriteria[filterGroups][0][filters][0][conditionType]=gteq
     &searchCriteria[filterGroups][1][filters][0][field]=state
     &searchCriteria[filterGroups][1][filters][0][value]=canceled
@@ -196,44 +204,45 @@ GET /rest/V1/orders
     &fields=items[entity_id,increment_id,base_grand_total,total_qty_ordered,created_at,state],total_count
 ```
 
-- Le jeton doit alors porter la ressource `Magento_Sales::actions_view` (Ventes > Opérations > Commandes > Actions >
-  Voir). Cette ressource donne accès aux commandes **complètes**, données personnelles comprises. Le module évite
-  précisément cela.
-- Le cube fait lui-même les sommes : CA et nombre de commandes du jour, panier moyen. La requête est plafonnée à 50
-  commandes ; au-delà, `total_count` donne le nombre exact mais le CA est sous-estimé, et le cube l'affiche comme tel
-  (« ≥ »).
-- Pas de comparaison avec hier, pas de courbe sur 7 jours, pas de record ni d'objectif. Les nouvelles commandes se
-  détectent par un `entity_id` plus grand que le dernier vu, ce qui suffit pour l'animation et le bip.
-- `fields=` réduit la réponse ; la ville n'est pas demandée, car elle obligerait à lire les adresses.
+> [!CAUTION]
+> The fallback token needs the `Magento_Sales::actions_view` resource (Sales > Operations > Orders > Actions > View),
+> which grants access to **full orders, personal data included**. Avoiding that is the very reason this module
+> exists: prefer installing it.
 
-## Développement et tests
+- The cube computes the totals itself: today's revenue, order count and average order value. The query is capped at
+  50 orders; beyond that, `total_count` gives the exact count but revenue is underestimated, and the cube displays it
+  as such ("≥").
+- No comparison with yesterday, no 7-day chart, no record and no goal. New orders are detected through an
+  `entity_id` greater than the last one seen, which is enough for the animation and the beep.
+- `fields=` trims the response; the city is not requested, because it would require reading addresses.
+
+## Development and tests
 
 ```bash
-docker/run.sh 2.4.8 install   # Magento 2.4.8-p5 vierge + module (lié par symlink), ~5 min la première fois
-docker/run.sh 2.4.8 test      # tests unitaires (cadre de Magento) + test d'API de bout en bout
+docker/run.sh 2.4.8 install   # blank Magento 2.4.8-p5 + module (symlinked), ~5 min the first time
+docker/run.sh 2.4.8 test      # unit tests (Magento's framework) + end-to-end API test
 docker/run.sh 2.4.6 install && docker/run.sh 2.4.6 test
 docker/run.sh 2.4.9 install && docker/run.sh 2.4.9 test
-docker/run.sh 2.4.8 down      # supprime la pile et ses volumes
+docker/run.sh 2.4.8 down      # removes the stack and its volumes
 ```
 
-- `Test/Unit` : bornes horaires (changements d'heure, fuseaux décalés d'une demi-heure), regroupement par jour local,
-  écarts, record, indicateurs d'événements, configuration, services REST (base simulée).
-- `Test/Api/CubeApiTest.php` : vide `sales_order` (le test refuse une base qui ne s'appelle pas `magento` ou
-  `magento_test`), insère des commandes à des heures choisies (historique, hier avant et après la même heure,
-  aujourd'hui, une annulée), puis vérifie chaque chiffre de `/stats` et `/events` avec un vrai jeton créé par
-  `cm-cube:integration:create`. Il couvre aussi : 401 sans jeton, 403 module désactivé, filtres de boutique et d'état,
-  record battu, limite d'événements, aucune donnée personnelle dans les réponses.
-- Le banc 2.4.6 autorise `league/flysystem` 2.x, visé par un avis de sécurité que Composer ≥ 2.9 bloque : la
-  dépendance est imposée par Magento 2.4.6 lui-même.
+- `Test/Unit`: time boundaries (DST changes, half-hour timezones), grouping by local day, deltas, record, event flags,
+  configuration, REST services (mocked database).
+- `Test/Api/CubeApiTest.php`: empties `sales_order` (the test refuses any database not named `magento` or
+  `magento_test`), inserts orders at chosen times (history, yesterday before and after the same time, today, one
+  canceled), then checks every figure of `/stats` and `/events` with a real token created by
+  `cm-cube:integration:create`. It also covers: 401 without a token, 403 when disabled, store and state filters,
+  record broken, event limit, and the absence of any personal data in responses.
+- The 2.4.6 bench allows `league/flysystem` 2.x, which is flagged by a security advisory that Composer ≥ 2.9 blocks:
+  that dependency is required by Magento 2.4.6 itself.
 
-## Performances
+## Performance
 
-- `/stats` : trois requêtes sur l'index `created_at` de `sales_order` (aujourd'hui, hier, dernière commande). L'historique
-  (7 jours et record) est calculé **une fois par jour** par tranches de 15 minutes, puis mis en cache (étiquette
-  `CM_CUBE`, vidé par `cache:flush`). Une commande d'un jour passé annulée après coup n'est donc prise en compte que le
-  lendemain.
-- `/events` : au plus `limit` commandes, plus trois agrégats.
+- `/stats`: three queries on the `created_at` index of `sales_order` (today, yesterday, last order). History (7 days
+  and record) is computed **once a day** in 15-minute buckets, then cached (tag `CM_CUBE`, cleared by
+  `cache:flush`). A past order canceled afterwards is therefore only taken into account the next day.
+- `/events`: at most `limit` orders, plus three aggregate queries.
 
-## Licence
+## License
 
-[OSL-3.0](LICENSE.txt), comme Magento Open Source.
+[OSL-3.0](LICENSE.txt), like Magento Open Source.
