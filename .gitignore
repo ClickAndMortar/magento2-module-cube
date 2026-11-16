@@ -1,0 +1,5 @@
+/build/
+/docker/.env
+/docker/.secrets/
+/vendor/
+.phpunit.result.cache

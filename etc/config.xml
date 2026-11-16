@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <cm_cube>
+            <general>
+                <enabled>1</enabled>
+                <screens>today,compare,week,last_order,goal</screens>
+                <daily_goal>0</daily_goal>
+                <timezone>Europe/Paris</timezone>
+                <store_ids/>
+                <excluded_states>canceled</excluded_states>
+            </general>
+            <advanced>
+                <events_limit>20</events_limit>
+                <record_window_days>365</record_window_days>
+            </advanced>
+        </cm_cube>
+    </default>
+</config>

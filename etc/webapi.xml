@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/cm-cube/stats" method="GET">
+        <service class="ClickAndMortar\Cube\Api\StatsInterface" method="getStats"/>
+        <resources>
+            <resource ref="ClickAndMortar_Cube::stats"/>
+        </resources>
+    </route>
+    <route url="/V1/cm-cube/events" method="GET">
+        <service class="ClickAndMortar\Cube\Api\EventsInterface" method="getEvents"/>
+        <resources>
+            <resource ref="ClickAndMortar_Cube::stats"/>
+        </resources>
+    </route>
+</routes>

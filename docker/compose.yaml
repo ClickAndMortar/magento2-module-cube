@@ -1,0 +1,55 @@
+# Banc de test local du module : Magento Open Source (miroir Mage-OS, sans clé repo.magento.com),
+# MariaDB, OpenSearch, PHP-FPM et nginx. Une pile par version (projet compose « cube-<version> »).
+name: ${COMPOSE_PROJECT_NAME:-cube-test}
+services:
+  db:
+    image: mariadb:${MARIADB_TAG:-11.4}
+    environment:
+      MARIADB_DATABASE: magento
+      MARIADB_USER: magento
+      MARIADB_PASSWORD: magento
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    command: ["--max_allowed_packet=64M", "--innodb_buffer_pool_size=256M"]
+    volumes: [db:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 30
+  opensearch:
+    image: opensearchproject/opensearch:${OPENSEARCH_TAG:-2.19.3}
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      OPENSEARCH_JAVA_OPTS: "-Xms384m -Xmx384m"
+    volumes: [os:/usr/share/opensearch/data]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
+      interval: 5s
+      retries: 40
+  php:
+    image: markoshust/magento-php:${PHP_TAG:-8.3-fpm-8}
+    environment:
+      COMPOSER_MEMORY_LIMIT: "-1"
+      MAGENTO_VERSION: ${MAGENTO_VERSION:-2.4.8-p5}
+      HTTP_PORT: ${HTTP_PORT:-8248}
+    volumes:
+      - code:/var/www/html
+      - ..:/module:ro
+      - ./scripts:/scripts:ro
+      - ./php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+    depends_on:
+      db: {condition: service_healthy}
+      opensearch: {condition: service_healthy}
+  web:
+    image: nginx:1.28-alpine
+    ports: ["127.0.0.1:${HTTP_PORT:-8248}:8000"]
+    volumes:
+      - code:/var/www/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [php]
+    profiles: [web]
+volumes:
+  db: {}
+  os: {}
+  code: {}

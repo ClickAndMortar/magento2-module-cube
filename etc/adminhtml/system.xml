@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="clickandmortar" translate="label" sortOrder="900">
+            <label>Click&amp;Mortar</label>
+        </tab>
+        <section id="cm_cube" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Cube</label>
+            <tab>clickandmortar</tab>
+            <resource>ClickAndMortar_Cube::config</resource>
+            <group id="general" translate="label comment" sortOrder="10" showInDefault="1">
+                <label>Statistiques du cube</label>
+                <comment><![CDATA[Le cube interroge <code>GET /rest/V1/cm-cube/stats</code> et <code>/rest/V1/cm-cube/events</code> avec un jeton d'intégration qui porte la ressource « Click&amp;Mortar Cube &gt; Lire les statistiques du cube ».]]></comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1">
+                    <label>Activer l'API du cube</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Désactivée, l'API répond 403 et le cube affiche « API désactivée ».</comment>
+                </field>
+                <field id="screens" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Écrans actifs</label>
+                    <source_model>ClickAndMortar\Cube\Model\Config\Source\Screens</source_model>
+                    <comment>Écrans entre lesquels le cube fait défiler (molette ou rotation automatique).</comment>
+                </field>
+                <field id="daily_goal" translate="label comment" type="text" sortOrder="30" showInDefault="1" canRestore="1">
+                    <label>Objectif de CA du jour</label>
+                    <validate>validate-zero-or-greater validate-number</validate>
+                    <comment>En devise de base. 0 = pas d'objectif (l'écran « objectif » est alors masqué).</comment>
+                </field>
+                <field id="timezone" translate="label comment" type="select" sortOrder="40" showInDefault="1" canRestore="1">
+                    <label>Fuseau horaire</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Timezone</source_model>
+                    <comment>Fuseau qui définit « aujourd'hui » et « hier à la même heure ».</comment>
+                </field>
+                <field id="store_ids" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1">
+                    <label>Boutiques comptées</label>
+                    <source_model>ClickAndMortar\Cube\Model\Config\Source\Stores</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <comment>Aucune sélection = toutes les vues de boutique.</comment>
+                </field>
+                <field id="excluded_states" translate="label comment" type="multiselect" sortOrder="60" showInDefault="1" canRestore="1">
+                    <label>États de commande exclus</label>
+                    <source_model>ClickAndMortar\Cube\Model\Config\Source\OrderStates</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <comment>Par défaut : annulées. Ajouter « Paiement en attente » si les paiements abandonnés gonflent le CA.</comment>
+                </field>
+            </group>
+            <group id="advanced" translate="label" sortOrder="20" showInDefault="1">
+                <label>Avancé</label>
+                <field id="events_limit" translate="label comment" type="text" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Nombre maximal d'événements par appel</label>
+                    <validate>validate-digits validate-digits-range digits-range-1-100</validate>
+                    <comment>Entre 1 et 100. Au-delà, seules les plus récentes sont renvoyées (champ « skipped »).</comment>
+                </field>
+                <field id="record_window_days" translate="label comment" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Fenêtre du record (jours)</label>
+                    <validate>validate-digits validate-digits-range digits-range-7-1095</validate>
+                    <comment>Le record est le meilleur CA journalier sur cette fenêtre, aujourd'hui exclu. Calculé une fois par jour et mis en cache.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

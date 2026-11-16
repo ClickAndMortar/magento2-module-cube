@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="ClickAndMortar_Cube::cube" title="Click&amp;Mortar Cube" sortOrder="200">
+                    <resource id="ClickAndMortar_Cube::stats" title="Lire les statistiques du cube (API)" sortOrder="10"/>
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="ClickAndMortar_Cube::config" title="Click&amp;Mortar Cube" sortOrder="200"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

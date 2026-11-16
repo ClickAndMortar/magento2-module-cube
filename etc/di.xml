@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="ClickAndMortar\Cube\Api\StatsInterface" type="ClickAndMortar\Cube\Model\StatsService"/>
+    <preference for="ClickAndMortar\Cube\Api\EventsInterface" type="ClickAndMortar\Cube\Model\EventsService"/>
+    <preference for="ClickAndMortar\Cube\Api\Data\StatsResultInterface" type="ClickAndMortar\Cube\Model\Data\StatsResult"/>
+    <preference for="ClickAndMortar\Cube\Api\Data\PeriodTotalsInterface" type="ClickAndMortar\Cube\Model\Data\PeriodTotals"/>
+    <preference for="ClickAndMortar\Cube\Api\Data\DayTotalsInterface" type="ClickAndMortar\Cube\Model\Data\DayTotals"/>
+    <preference for="ClickAndMortar\Cube\Api\Data\OrderSummaryInterface" type="ClickAndMortar\Cube\Model\Data\OrderSummary"/>
+    <preference for="ClickAndMortar\Cube\Api\Data\OrderEventInterface" type="ClickAndMortar\Cube\Model\Data\OrderEvent"/>
+    <preference for="ClickAndMortar\Cube\Api\Data\EventsResultInterface" type="ClickAndMortar\Cube\Model\Data\EventsResult"/>
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="cm_cube_integration_create" xsi:type="object">ClickAndMortar\Cube\Console\Command\CreateIntegration</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="ClickAndMortar\Cube\Console\Command\CreateIntegration">
+        <arguments>
+            <argument name="integrationService" xsi:type="object">Magento\Integration\Api\IntegrationServiceInterface\Proxy</argument>
+            <argument name="oauthService" xsi:type="object">Magento\Integration\Api\OauthServiceInterface\Proxy</argument>
+        </arguments>
+    </type>
+</config>
