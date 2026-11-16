@@ -8,6 +8,7 @@ use ClickAndMortar\Cube\Model\StatsCalculator;
 use ClickAndMortar\Cube\Model\StatsService;
 use Magento\Framework\Webapi\Exception as WebapiException;
 
+#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
 class StatsServiceTest extends ServiceTestCase
 {
     private function service(): StatsService
@@ -109,7 +110,7 @@ class StatsServiceTest extends ServiceTestCase
 
     public function testDisabled(): void
     {
-        $config = $this->createMock(\ClickAndMortar\Cube\Model\Config::class);
+        $config = $this->createStub(\ClickAndMortar\Cube\Model\Config::class);
         $config->method('isEnabled')->willReturn(false);
         $this->config = $config;
         $this->expectException(WebapiException::class);

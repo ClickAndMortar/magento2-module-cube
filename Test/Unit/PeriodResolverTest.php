@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ClickAndMortar\Cube\Test\Unit;
 
 use ClickAndMortar\Cube\Model\PeriodResolver;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PeriodResolverTest extends TestCase
@@ -11,6 +12,7 @@ class PeriodResolverTest extends TestCase
     /**
      * @dataProvider casesProvider
      */
+    #[DataProvider('casesProvider')]
     public function testResolve(
         string $tz,
         string $nowUtc,

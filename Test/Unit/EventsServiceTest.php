@@ -7,6 +7,7 @@ use ClickAndMortar\Cube\Model\EventsService;
 use ClickAndMortar\Cube\Model\PeriodResolver;
 use ClickAndMortar\Cube\Model\StatsCalculator;
 
+#[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
 class EventsServiceTest extends ServiceTestCase
 {
     private function service(): EventsService

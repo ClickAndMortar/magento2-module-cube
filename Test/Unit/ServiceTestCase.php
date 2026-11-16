@@ -18,12 +18,13 @@ use ClickAndMortar\Cube\Model\ResourceModel\OrderStats;
 use ClickAndMortar\Cube\Model\StatsCalculator;
 use Magento\Framework\App\CacheInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 abstract class ServiceTestCase extends TestCase
 {
-    protected Config&MockObject $config;
-    protected Clock&MockObject $clock;
+    protected Config&Stub $config;
+    protected Clock&Stub $clock;
     protected OrderStats&MockObject $orderStats;
     protected CacheInterface&MockObject $cache;
     protected History $history;
@@ -31,7 +32,7 @@ abstract class ServiceTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $this->config = $this->createMock(Config::class);
+        $this->config = $this->createStub(Config::class);
         $this->config->method('isEnabled')->willReturn(true);
         $this->config->method('getTimezone')->willReturn(new \DateTimeZone('Europe/Paris'));
         $this->config->method('getStoreIds')->willReturn([1]);
@@ -40,7 +41,7 @@ abstract class ServiceTestCase extends TestCase
         $this->config->method('getRecordWindowDays')->willReturn(365);
         $this->config->method('getBaseCurrency')->willReturn('EUR');
 
-        $this->clock = $this->createMock(Clock::class);
+        $this->clock = $this->createStub(Clock::class);
         // 16/11/2026 14:00 à Paris
         $this->clock->method('now')->willReturn(new \DateTimeImmutable('2026-11-16 13:00:00', new \DateTimeZone('UTC')));
 
