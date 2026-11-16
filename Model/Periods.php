@@ -7,7 +7,7 @@ namespace ClickAndMortar\Cube\Model;
  * Bornes temporelles d'un calcul, exprimées en UTC (format MySQL) comme sales_order.created_at.
  * Les bornes de début sont incluses, les bornes de fin exclues.
  */
-final class Periods
+class Periods
 {
     public const SQL_FORMAT = 'Y-m-d H:i:s';
 
@@ -27,7 +27,9 @@ final class Periods
      */
     public function dayStartUtc(string $localDate): string
     {
-        return PeriodResolver::localMidnightUtc($localDate, $this->timezone);
+        return (new \DateTimeImmutable($localDate . ' 00:00:00', $this->timezone))
+            ->setTimezone(new \DateTimeZone('UTC'))
+            ->format(self::SQL_FORMAT);
     }
 
     /**

@@ -19,9 +19,9 @@ class PeriodResolver
 
         // Même heure murale hier : on recompose la date pour ne pas dépendre de la durée de la journée.
         $sameTime = new \DateTimeImmutable($yesterdayDate . ' ' . $nowLocal->format('H:i:s'), $timezone);
-        $yesterdayStart = self::localMidnightUtc($yesterdayDate, $timezone);
-        $todayStart = self::localMidnightUtc($todayDate, $timezone);
-        $sameTimeUtc = self::toUtc($sameTime);
+        $yesterdayStart = $this->localMidnightUtc($yesterdayDate, $timezone);
+        $todayStart = $this->localMidnightUtc($todayDate, $timezone);
+        $sameTimeUtc = $this->toUtc($sameTime);
         if ($sameTimeUtc > $todayStart) {
             $sameTimeUtc = $todayStart;
         }
@@ -31,18 +31,18 @@ class PeriodResolver
             $nowLocal,
             $todayDate,
             $todayStart,
-            self::localMidnightUtc($tomorrowDate, $timezone),
+            $this->localMidnightUtc($tomorrowDate, $timezone),
             $yesterdayStart,
             $sameTimeUtc
         );
     }
 
-    public static function localMidnightUtc(string $localDate, \DateTimeZone $timezone): string
+    private function localMidnightUtc(string $localDate, \DateTimeZone $timezone): string
     {
-        return self::toUtc(new \DateTimeImmutable($localDate . ' 00:00:00', $timezone));
+        return $this->toUtc(new \DateTimeImmutable($localDate . ' 00:00:00', $timezone));
     }
 
-    private static function toUtc(\DateTimeImmutable $date): string
+    private function toUtc(\DateTimeImmutable $date): string
     {
         return $date->setTimezone(new \DateTimeZone('UTC'))->format(Periods::SQL_FORMAT);
     }

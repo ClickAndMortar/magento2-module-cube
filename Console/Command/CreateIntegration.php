@@ -44,9 +44,9 @@ class CreateIntegration extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->appState->setAreaCode(Area::AREA_ADMINHTML);
+            $this->appState->getAreaCode();
         } catch (\Magento\Framework\Exception\LocalizedException) {
-            // zone déjà définie
+            $this->appState->setAreaCode(Area::AREA_ADMINHTML);
         }
 
         $name = (string) $input->getOption('name');

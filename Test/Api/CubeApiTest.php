@@ -199,6 +199,7 @@ class CubeApiTest extends TestCase
 
     private function magento(string $command): void
     {
+        // phpcs:ignore Magento2.Security.InsecureFunction -- test de bout en bout, commande fixe
         exec('cd ' . escapeshellarg(self::$magentoRoot) . ' && php bin/magento ' . $command . ' 2>&1', $out, $code);
         self::assertSame(0, $code, "bin/magento $command\n" . implode("\n", $out));
     }
