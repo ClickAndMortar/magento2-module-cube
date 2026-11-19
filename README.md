@@ -1,5 +1,9 @@
 # ClickAndMortar_Cube: live sales stats for the Cube Magento
 
+[![Packagist version](https://img.shields.io/packagist/v/clickandmortar/magento2-module-cube)](https://packagist.org/packages/clickandmortar/magento2-module-cube)
+[![License: OSL-3.0](https://img.shields.io/packagist/l/clickandmortar/magento2-module-cube)](LICENSE.txt)
+![Magento 2.4.6 to 2.4.9](https://img.shields.io/badge/Magento%20Open%20Source-2.4.6%20%E2%86%92%202.4.9-orange)
+
 <p align="center">
   <img src="docs/cube-front.jpg" alt="The Cube Magento, front view: a 72 mm orange 3D-printed cube whose screen shows a new order of 189.00 EUR from Lyon" width="520">
 </p>
