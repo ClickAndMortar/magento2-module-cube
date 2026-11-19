@@ -1,9 +1,9 @@
 {
-    "name": "clickandmortar/module-cube",
+    "name": "clickandmortar/magento2-module-cube",
     "description": "Read-only REST API exposing today's sales stats (no personal data) for the Click&Mortar Cube Magento display.",
     "type": "magento2-module",
     "license": "OSL-3.0",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "authors": [
         {
             "name": "Click&Mortar",

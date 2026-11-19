@@ -39,11 +39,10 @@ PHPCS (`Magento2` standard from magento/magento-coding-standard): 0 errors.
 
 ## Installation
 
-The module is not on Packagist: declare this GitHub repository in your store's `composer.json`.
+The module is published on [Packagist](https://packagist.org/packages/clickandmortar/magento2-module-cube):
 
 ```bash
-composer config repositories.cm-cube vcs https://github.com/ClickAndMortar/magento2-module-cube
-composer require clickandmortar/module-cube:^1.0
+composer require clickandmortar/magento2-module-cube:^1.0
 bin/magento module:enable ClickAndMortar_Cube
 bin/magento setup:upgrade
 # in production mode:

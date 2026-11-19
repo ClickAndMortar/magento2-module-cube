@@ -25,9 +25,9 @@ if [ ! -f app/etc/env.php ]; then
     --search-engine=opensearch --opensearch-host=opensearch --opensearch-port=9200 \
     --opensearch-index-prefix=m2 --backend-frontname=admin --cleanup-database
 fi
-if ! composer show clickandmortar/module-cube >/dev/null 2>&1; then
+if ! composer show clickandmortar/magento2-module-cube >/dev/null 2>&1; then
   composer config repositories.cube '{"type": "path", "url": "/module", "options": {"symlink": true}}'
-  composer require --no-interaction --no-progress clickandmortar/module-cube:1.0.0
+  composer require --no-interaction --no-progress clickandmortar/magento2-module-cube:@dev
 fi
 bin/magento module:enable ClickAndMortar_Cube
 bin/magento setup:upgrade --keep-generated
